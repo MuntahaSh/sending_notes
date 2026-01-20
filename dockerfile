@@ -1,29 +1,45 @@
-# Use latest PHP FPM image
-FROM php:8.2-fpm
+FROM php:8.1-fpm
 
 # Set working directory
-WORKDIR /var/www/html
+WORKDIR /var/www
 
-# Install only required PHP extensions
-RUN apt-get update && \
-    apt-get install -y git unzip libzip-dev libonig-dev libxml2-dev pkg-config && \
-    docker-php-ext-install pdo_mysql mbstring bcmath tokenizer xml zip && \
-    rm -rf /var/lib/apt/lists/*
+# Install system dependencies and PHP extensions
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libpng-dev \
+    libjpeg62-turbo-dev \
+    libfreetype6-dev \
+    locales \
+    zip unzip git curl \
+    libonig-dev libxml2-dev libzip-dev \
+    libcurl4-openssl-dev libssl-dev nano \
+    default-mysql-client libpq-dev \
+    && docker-php-ext-configure gd --with-jpeg --with-freetype \
+    && docker-php-ext-install pdo_mysql mbstring zip exif pcntl bcmath gd tokenizer xml
 
-# Copy Composer from official image
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+# Install Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Copy project files
-COPY . /var/www/html
+# Copy Laravel application code
+COPY . .
 
 # Install PHP dependencies
-RUN composer install --no-dev --optimize-autoloader --ignore-platform-reqs
+RUN composer install --no-interaction --prefer-dist --optimize-autoloader
 
-# Set permissions for storage and cache
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+# Clear cache
+RUN php artisan config:clear && \
+    php artisan route:clear && \
+    php artisan view:clear
 
-# Expose port required by Render
-EXPOSE 8080
+# Fix storage symlink
+RUN if [ -L "public/storage" ] || [ -e "public/storage" ]; then rm -rf public/storage; fi && \
+    php artisan storage:link
 
-# Start Laravel built-in server
-CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8080"]
+# Set permissions
+RUN chown -R www-data:www-data /var/www
+
+# Expose Laravel port
+EXPOSE 8000
+
+# Default command
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
