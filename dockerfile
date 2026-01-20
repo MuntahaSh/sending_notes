@@ -4,23 +4,22 @@ FROM php:8.2-fpm
 # Set working directory
 WORKDIR /var/www/html
 
-# Install PHP extensions only (minimal system deps)
+# Install only required PHP extensions
 RUN apt-get update && \
-    apt-get install -y git unzip zip libzip-dev libonig-dev libxml2-dev pkg-config libpng-dev libjpeg-dev libfreetype6-dev && \
-    docker-php-ext-configure gd --with-freetype --with-jpeg && \
-    docker-php-ext-install pdo_mysql mbstring bcmath tokenizer xml gd zip && \
+    apt-get install -y git unzip libzip-dev libonig-dev libxml2-dev pkg-config && \
+    docker-php-ext-install pdo_mysql mbstring bcmath tokenizer xml zip && \
     rm -rf /var/lib/apt/lists/*
 
-# Copy composer from official image
+# Copy Composer from official image
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 # Copy project files
 COPY . /var/www/html
 
-# Install PHP dependencies (ignore platform to avoid Docker version mismatches)
+# Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader --ignore-platform-reqs
 
-# Set permissions
+# Set permissions for storage and cache
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
 # Expose port required by Render
