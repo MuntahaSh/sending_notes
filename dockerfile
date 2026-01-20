@@ -1,19 +1,17 @@
-# Pre-built Laravel-ready PHP image
-FROM laravelsail/php80-composer:latest
+# Use official PHP 8.2 Apache image
+FROM php:8.2-apache
 
+# Set working directory
 WORKDIR /var/www/html
 
-# Copy your Laravel app
+# Copy your Laravel app (including pre-built vendor)
 COPY . .
 
-# Install PHP dependencies
-RUN composer install --no-dev --optimize-autoloader --ignore-platform-reqs
-
-# Ensure storage and cache directories are writable
+# Ensure storage and bootstrap/cache are writable
 RUN chown -R www-data:www-data storage bootstrap/cache
 
-# Expose port for Render
-EXPOSE 8080
+# Expose port 80 for Render or Docker
+EXPOSE 80
 
-# Start Laravel built-in server
-CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8080"]
+# Start Apache
+CMD ["apache2-foreground"]
