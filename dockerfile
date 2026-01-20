@@ -1,10 +1,10 @@
-# Use PHP 8.1 with Apache
+# PHP 8.1 with Apache
 FROM php:8.1-apache
 
 # Set working directory
 WORKDIR /var/www/html
 
-# Install system dependencies
+# Install system dependencies and PHP extensions
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
@@ -13,24 +13,32 @@ RUN apt-get update && apt-get install -y \
     curl \
     nodejs \
     npm \
-    && docker-php-ext-install pdo_mysql zip
+    libonig-dev \
+    libxml2-dev \
+    libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
+    libssl-dev \
+    libcurl4-openssl-dev \
+    pkg-config \
+    && docker-php-ext-install pdo_mysql mbstring tokenizer bcmath ctype xml gd curl zip
 
 # Enable Apache mod_rewrite
 RUN a2enmod rewrite
 
-# Copy composer.lock and composer.json
-COPY composer.lock composer.json /var/www/html/
-
-# Install Composer
+# Copy composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Install PHP dependencies
-RUN composer install --no-dev --optimize-autoloader
+# Copy composer files
+COPY composer.json composer.lock /var/www/html/
 
-# Copy project files
+# Install PHP dependencies
+RUN composer install --no-dev --optimize-autoloader --ignore-platform-reqs
+
+# Copy app files
 COPY . /var/www/html
 
-# Install Node dependencies & build assets (Tailwind & Vite)
+# Install Node dependencies and build assets
 RUN npm install
 RUN npm run build
 
