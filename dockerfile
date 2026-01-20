@@ -1,4 +1,4 @@
-# PHP 8.1 with Apache
+# Use official PHP 8.1 Apache image
 FROM php:8.1-apache
 
 # Set working directory
@@ -9,22 +9,17 @@ RUN apt-get update && apt-get install -y \
     git \
     unzip \
     libzip-dev \
-    zip \
-    curl \
-    nodejs \
-    npm \
     libonig-dev \
     libxml2-dev \
+    pkg-config \
     libpng-dev \
     libjpeg-dev \
     libfreetype6-dev \
-    libssl-dev \
-    libcurl4-openssl-dev \
-    pkg-config \
-    && docker-php-ext-install pdo_mysql mbstring tokenizer bcmath ctype xml gd curl zip
-
-# Enable Apache mod_rewrite
-RUN a2enmod rewrite
+    zip \
+    curl \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install pdo_mysql mbstring bcmath tokenizer ctype xml gd zip \
+    && a2enmod rewrite
 
 # Copy composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
@@ -38,9 +33,11 @@ RUN composer install --no-dev --optimize-autoloader --ignore-platform-reqs
 # Copy app files
 COPY . /var/www/html
 
-# Install Node dependencies and build assets
-RUN npm install
-RUN npm run build
+# Install Node & npm via official Node image during build (optional)
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs \
+    && npm install \
+    && npm run build
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
