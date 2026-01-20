@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   app:
     build:
@@ -6,10 +8,9 @@ services:
     container_name: notesapp_php
     restart: unless-stopped
     ports:
-      - "8080:80"
+      - "8080:8080"
     volumes:
       - .:/var/www/html
-      - ./vendor:/var/www/html/vendor   # ensure vendor is synced
       - ./storage:/var/www/html/storage
       - ./bootstrap/cache:/var/www/html/bootstrap/cache
     environment:
