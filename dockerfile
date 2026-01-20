@@ -1,10 +1,10 @@
-# Use official PHP 8.1 Apache image
-FROM php:8.1-apache
+# Use official PHP 8.1 FPM image (faster + simpler than Apache)
+FROM php:8.1-fpm
 
 # Set working directory
 WORKDIR /var/www/html
 
-# Install system dependencies and PHP extensions
+# Install PHP extensions and system dependencies
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
@@ -19,31 +19,29 @@ RUN apt-get update && apt-get install -y \
     curl \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install pdo_mysql mbstring bcmath tokenizer ctype xml gd zip \
-    && a2enmod rewrite
+    && rm -rf /var/lib/apt/lists/*
 
-# Copy composer
+# Copy Composer from official image
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Copy composer files
-COPY composer.json composer.lock /var/www/html/
+# Copy project files
+COPY . /var/www/html
 
 # Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader --ignore-platform-reqs
 
-# Copy app files
-COPY . /var/www/html
-
-# Install Node & npm via official Node image during build (optional)
+# Install Node & npm via NodeSource (for Tailwind / Vite)
 RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
     && apt-get install -y nodejs \
     && npm install \
-    && npm run build
+    && npm run build \
+    && rm -rf /var/lib/apt/lists/*
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Expose port 80
-EXPOSE 80
+# Expose port 8080 (Render uses this port)
+EXPOSE 8080
 
-# Start Apache
-CMD ["apache2-foreground"]
+# Start Laravel with PHP built-in server
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8080"]
