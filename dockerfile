@@ -1,37 +1,29 @@
-# Use PHP 8.2 FPM (latest stable)
+# Use latest PHP FPM image
 FROM php:8.2-fpm
 
 # Set working directory
 WORKDIR /var/www/html
 
-# Install system dependencies and PHP extensions
+# Install PHP extensions only (minimal system deps)
 RUN apt-get update && \
-    apt-get install -y git unzip zip curl libzip-dev libonig-dev libxml2-dev pkg-config \
-    libpng-dev libjpeg-dev libfreetype6-dev && \
+    apt-get install -y git unzip zip libzip-dev libonig-dev libxml2-dev pkg-config libpng-dev libjpeg-dev libfreetype6-dev && \
     docker-php-ext-configure gd --with-freetype --with-jpeg && \
     docker-php-ext-install pdo_mysql mbstring bcmath tokenizer xml gd zip && \
     rm -rf /var/lib/apt/lists/*
 
-# Copy composer from official Composer image
+# Copy composer from official image
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Copy the project files
+# Copy project files
 COPY . /var/www/html
 
-# Install PHP dependencies
+# Install PHP dependencies (ignore platform to avoid Docker version mismatches)
 RUN composer install --no-dev --optimize-autoloader --ignore-platform-reqs
 
-# Install Node.js and npm via NodeSource for Tailwind/Vite
-RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
-    apt-get install -y nodejs && \
-    npm install && \
-    npm run build && \
-    rm -rf /var/lib/apt/lists/*
-
-# Set permissions for storage and bootstrap/cache
+# Set permissions
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Expose Render’s required port
+# Expose port required by Render
 EXPOSE 8080
 
 # Start Laravel built-in server
