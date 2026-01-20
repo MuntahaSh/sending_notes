@@ -1,45 +1,19 @@
-FROM php:8.1-fpm
+# Pre-built Laravel-ready PHP image
+FROM laravelsail/php80-composer:latest
 
-# Set working directory
-WORKDIR /var/www
+WORKDIR /var/www/html
 
-# Install system dependencies and PHP extensions
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    libpng-dev \
-    libjpeg62-turbo-dev \
-    libfreetype6-dev \
-    locales \
-    zip unzip git curl \
-    libonig-dev libxml2-dev libzip-dev \
-    libcurl4-openssl-dev libssl-dev nano \
-    default-mysql-client libpq-dev \
-    && docker-php-ext-configure gd --with-jpeg --with-freetype \
-    && docker-php-ext-install pdo_mysql mbstring zip exif pcntl bcmath gd tokenizer xml
-
-# Install Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
-# Copy Laravel application code
+# Copy your Laravel app
 COPY . .
 
 # Install PHP dependencies
-RUN composer install --no-interaction --prefer-dist --optimize-autoloader
+RUN composer install --no-dev --optimize-autoloader --ignore-platform-reqs
 
-# Clear cache
-RUN php artisan config:clear && \
-    php artisan route:clear && \
-    php artisan view:clear
+# Ensure storage and cache directories are writable
+RUN chown -R www-data:www-data storage bootstrap/cache
 
-# Fix storage symlink
-RUN if [ -L "public/storage" ] || [ -e "public/storage" ]; then rm -rf public/storage; fi && \
-    php artisan storage:link
+# Expose port for Render
+EXPOSE 8080
 
-# Set permissions
-RUN chown -R www-data:www-data /var/www
-
-# Expose Laravel port
-EXPOSE 8000
-
-# Default command
-CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
+# Start Laravel built-in server
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8080"]
