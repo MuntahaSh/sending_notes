@@ -1,0 +1,6 @@
+﻿*** Begin Patch
+*** Update File: .env
+@@
+-APP_NAME=Laravel
++APP_NAME=NotesApp
+*** End Patch

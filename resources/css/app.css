@@ -2,6 +2,79 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Preline UI */
+/* @import "../../node_modules/preline/variants.css";
+@source "../../node_modules/preline/dist/*.js"; */
+
 [x-cloak] {
     display: none;
+}
+
+/* Enable class-based dark mode */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Calendar dots (notes indicator) */
+.fc-daygrid-event-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 9999px;
+    background-color: #54abd6; /* your primary */
+    border: none;
+    margin: 0 auto;
+}
+
+.fc .fc-button {
+    background-color: #54abd6;
+    border: none;
+    padding: 0.35rem 0.6rem;
+    border-radius: 0.5rem;
+    font-size: 0.75rem;
+}
+
+.fc .fc-button:hover {
+    background-color: #54abd6cc; /* slightly lighter on hover */
+}
+
+.fc .fc-button:focus {
+    box-shadow: none;
+}
+
+.fc .fc-icon {
+    font-size: 0.75rem;
+}
+
+
+/* Calendar dots (notes indicator) */
+.fc-daygrid-event-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 9999px;
+    background-color: #54abd6; /* your primary */
+    border: none;
+    margin: 0 auto;
+}
+/* Hide the default event layout spacing */
+.fc-daygrid-event {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* Center container inside the day cell */
+.fc-daygrid-day-frame {
+    position: relative;
+}
+
+/* BIG centered dot */
+.fc-daygrid-event-dot {
+width: 14px;
+height: 14px;
+    border-radius: 50%;
+    background-color: #54abd6; /* same as buttons */
+    border: none;
+    opacity: 0.85;
+
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
