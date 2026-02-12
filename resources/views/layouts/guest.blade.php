@@ -16,7 +16,7 @@
         @endif
     </title>
 
-    <link rel="icon" type="image/png" href="{{ Vite::asset('resources/images/brand-icon.png') }}">
+    <link rel="icon" type="image/png" href="{{ asset('images/brand-icon.png') }}">
 
 
     <!-- Fonts -->
