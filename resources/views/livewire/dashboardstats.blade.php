@@ -5,19 +5,20 @@ use Livewire\Volt\Component;
 new class extends Component {
     //pringing the information when the componant is rendered
     public function with(){
+        $user = Auth::user();
+        $today = today();
+
         return [
-            'notesSentCount'=>Auth::user()->notes()
-            ->where('send_date','<',now())
-            ->where('is_published',true)
-            ->count(),
+            'notesSentCount' => $user->notes()
+                ->whereDate('send_date', '<', $today)
+                ->where('is_published', true)
+                ->count(),
 
-            'notesUnSentCount'=>Auth::user()->notes()
-            ->where('send_date','>',date('Y-m-d'))
-            ->count(),
+            'notesUnSentCount' => $user->notes()
+                ->whereDate('send_date', '>=', $today)
+                ->count(),
 
-            'notesLoveCount'=>Auth::user()->notes->sum('heart_count'),
-
-
+            'notesLoveCount' => $user->notes->sum('heart_count'),
         ];
 
     }
