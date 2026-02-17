@@ -35,5 +35,6 @@ EXPOSE 8080
 
 CMD php artisan migrate --force && \
     php artisan queue:work --daemon --tries=3 --timeout=90 & \
-    while true; do php artisan schedule:run --verbose --no-interaction; sleep 60; done
+    while true; do php artisan schedule:run --no-interaction; sleep 60; done & \
+    php artisan serve --host=0.0.0.0 --port=$PORT
 
