@@ -35,6 +35,5 @@ RUN chown -R www-data:www-data storage bootstrap/cache
 EXPOSE 80
 
 CMD php artisan migrate --force && \
-    php artisan queue:work --daemon --tries=3 --timeout=90 & \
     while true; do php artisan schedule:run --no-interaction; sleep 60; done & \
     apache2-foreground
