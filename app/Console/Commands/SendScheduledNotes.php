@@ -32,7 +32,7 @@ class SendScheduledNotes extends Command
 
         $notes = Notes::where('status', 'waiting')
             ->where('is_published', true)
-            ->whereDate('send_date', '<=', $now)
+            ->where('send_date', '<=', $now)
             ->get();
 
         foreach ($notes as $note) {
