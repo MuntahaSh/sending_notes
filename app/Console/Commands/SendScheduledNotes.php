@@ -29,15 +29,18 @@ class SendScheduledNotes extends Command
     public function handle()
     {
         $now = Carbon::now();
-        $notes = Notes::where('is_published', true)
-            ->where('send_date', $now->toDateString())
-            ->get();
 
-        $noteCount = $notes->count();
-        $this->info("sending {$noteCount} notes .");
+        $notes = Notes::where('status', 'waiting')
+            ->where('is_published', true)
+            ->whereDate('send_date', '<=', $now)
+            ->get();
 
         foreach ($notes as $note) {
             SendEmail::dispatch($note);
+
+            $note->update([
+                'status' => 'sent'
+            ]);
         }
     }
 }
