@@ -6,6 +6,12 @@ use Illuminate\Support\Facades\Auth as FacadesAuth;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
+use Illuminate\Support\Facades\Artisan;
+
+Route::get('/test-scheduler', function () {
+    Artisan::call('app:send-scheduled-notes');
+    return 'Scheduler executed!';
+});
 Route::get('/', function () {
     return view('welcome');
 });
