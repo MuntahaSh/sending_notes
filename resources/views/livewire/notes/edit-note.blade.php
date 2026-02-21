@@ -23,7 +23,7 @@ new #[Layout('layouts.app')]class extends Component
         $this->note = $note;
         $this->noteTitle = $note->title;
         $this->noteBody = $note->body;
-        $this->noteSendDate = \Carbon\Carbon::parse($note->send_date)->format('Y-m-d');
+        $this->noteSendDate = \Carbon\Carbon::parse($note->send_date)->format('Y-m-d\TH:i');
         $this->noteRecipient = $note->recipient;
         $this->noteIsPublished = $note->is_published;
 
