@@ -20,7 +20,8 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withSchedule(function (Schedule $schedule) {
         $schedule->command('app:send-scheduled-notes')
-            ->dailyAt('09:00')
+
+            ->everyMinute()
             ->timezone(config('app.timezone'));
     })
     ->create();
