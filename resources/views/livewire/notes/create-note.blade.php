@@ -38,7 +38,7 @@
             <div class="flex flex-col gap-4 sm:flex-row">
                 <div class="flex-1">
                     <x-label for="send_date" value="Send Date" />
-                    <input wire:model="noteSendDate" id="send_date" type="date"
+                    <input wire:model="noteSendDate" id="send_date" type="datetime"
                         class="mt-2 block w-full rounded-2xl border border-[#c9e3ef] bg-white/90 px-4 py-3 shadow-sm focus:border-[#54abd6] focus:ring-[#54abd6] @error('noteSendDate') border-rose-400 @enderror">
                     @error('noteSendDate') <p class="mt-1 text-sm text-rose-500">{{ $message }}</p> @enderror
                 </div>
