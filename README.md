@@ -1,6 +1,6 @@
 # Notes App
 
-[**Live Demo**](https://sending-notes.onrender.com/)
+[**Live Demo**](https://sending-notes.onrender.com/) *(The first load may take about a minute after inactivity while the free Render service wakes up.)*
 
 Notes App is a web application for writing notes and scheduling them to be delivered to someone by email. Users can manage their notes, see scheduled dates on a calendar, and share published notes through a link. The application also includes account security and team features.
 
