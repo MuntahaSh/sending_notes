@@ -1,59 +1,112 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Notes App
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Notes App is a web application for writing notes and scheduling them to be delivered to someone by email. Users can manage their notes, see scheduled dates on a calendar, and share published notes through a link. The application also includes account security and team features.
 
-## About Laravel
+## Features
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- Create, edit, and delete notes with a title, message, recipient email, and scheduled send date.
+- Automatically email the recipient when a published note reaches its scheduled time.
+- Open a published note using the link sent by email.
+- View scheduled note dates in a calendar and see note status on the dashboard.
+- Register and sign in, verify email addresses, manage profiles, and enable two-factor authentication.
+- Create teams, invite members, and manage team roles.
+- Manage personal API tokens through Laravel Jetstream and Sanctum.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Technology
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### Backend
 
-## Learning Laravel
+- PHP 8.2+
+- Laravel 12
+- Livewire 3 and Livewire Volt for interactive pages
+- Laravel Jetstream for account, team, and API-token features
+- Laravel Fortify for authentication features
+- Laravel Sanctum for API tokens
+- Laravel Tinker for interactive application debugging
+- MySQL by default (configure another Laravel-supported database if desired)
+- Laravel queues and scheduler for sending notes at their scheduled time
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+### Frontend
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- JavaScript (ES modules)
+- Vite 7, Laravel Vite plugin, and Tailwind Vite plugin
+- Tailwind CSS 3, with Tailwind Forms and Typography plugins
+- Alpine.js and Preline
+- FullCalendar 6 (calendar grid and interactions packages are installed)
+- SweetAlert2 for alert dialogs
+- Axios, PostCSS, and Autoprefixer
 
-## Laravel Sponsors
+### Other packages
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+- `doctrine/dbal` for database schema operations
+- `jantinnerezo/livewire-alert` for Livewire notifications
+- `symfony/postmark-mailer` for Postmark email transport
+- `fakerphp/faker` for generated test data
+- Pest and `pestphp/pest-plugin-laravel` for tests
+- Mockery for test doubles
+- Laravel Sail, Pail, Pint, Boost, and Collision for development and debugging
+- Concurrently to run the local app, queue worker, and Vite together
 
-### Premium Partners
+## Requirements
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+- PHP 8.2 or newer with the extensions required by Laravel
+- Composer
+- Node.js and npm
+- MySQL or another database supported by Laravel
+- A configured email transport for real email delivery
 
-## Contributing
+## Installation
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+1. Clone this repository and enter its directory.
+2. Install PHP dependencies and create the environment file:
 
-## Code of Conduct
+   ```bash
+   composer install
+   cp .env.example .env
+   php artisan key:generate
+   ```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+   On Windows PowerShell, use `Copy-Item .env.example .env` in place of `cp`.
 
-## Security Vulnerabilities
+3. Set the database connection and credentials in `.env`. The example configuration uses MySQL and the database name `notesapp`. Create that database before migrating.
+4. Run database migrations and install/build the frontend:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+   ```bash
+   php artisan migrate
+   npm install
+   npm run build
+   ```
+
+5. Configure the `MAIL_*` values in `.env`. The example uses `MAIL_MAILER=log`, which writes email content to the application log instead of delivering it. For production, configure a working mail service and queue connection.
+
+## Running locally
+
+Start the application, queue worker, and frontend development server:
+
+```bash
+composer run dev
+```
+
+In a second terminal, run Laravel's scheduler so due notes are queued each minute:
+
+```bash
+php artisan schedule:work
+```
+
+The app is served at `http://localhost:8000` by default. For scheduled emails to be delivered, keep both the scheduler and a queue worker running. `composer run dev` starts a queue listener for local development.
+
+## Docker
+
+The repository includes a `dockerfile` for building an Apache-based image. Build and run it with your chosen Docker setup, and provide the application's environment variables and database/mail services. The image runs migrations on startup and runs the scheduler alongside Apache.
+
+## Tests
+
+Run the automated test suite with:
+
+```bash
+php artisan test
+```
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This repository currently uses the MIT license declared in `composer.json`.
